@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"lcc/misc"
 	"os"
 )
 
@@ -11,7 +13,17 @@ var rootCmd = &cobra.Command{
 	Short: "Leancloud cli for options curd.",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Hello, world!")
+		// get optionKey
+		optionKey, _ := cmd.Flags().GetString("optionKey")
+		// Get value by optionKey
+		if optionKey != "" {
+			fmt.Println("optionKey:", optionKey)
+			res := misc.LcGet(optionKey)
+			fmt.Println("res:", res)
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -32,5 +44,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// get value by optionKey
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().StringP("optionKey", "k", "", "Get value by option key")
 }
