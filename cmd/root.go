@@ -14,14 +14,24 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Hello, world!")
-		// get optionKey
-		optionKey, _ := cmd.Flags().GetString("optionKey")
+		// get optionKey from args
+		optionKey := args[0]
+		isRead, _ := cmd.Flags().GetBool("read")
+		isUpdate, _ := cmd.Flags().GetBool("update")
+
 		// Get value by optionKey
 		if optionKey != "" {
-			fmt.Println("optionKey:", optionKey)
-			res := misc.LcGet(optionKey)
-			fmt.Println("res:", res)
+			// call by method:
+			// lcc read -k optionKey
+			if isRead {
+				fmt.Println(misc.LcRead(optionKey))
+			}
+
+			// lcc update -k optionKey -v key -v value
+			if isUpdate {
+				value, _ := cmd.Flags().GetString("value")
+				fmt.Println(misc.LcUpdate(optionKey, value))
+			}
 		}
 	},
 }
@@ -46,5 +56,12 @@ func init() {
 	// when this action is called directly.
 	// get value by optionKey
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().StringP("optionKey", "k", "", "Get value by option key")
+	//rootCmd.Flags().StringP("optionKey", "k", "", "Get value by option key")
+	// add boolean create/update/read/delete flags
+	rootCmd.Flags().BoolP("read", "r", false, "Read option")
+	rootCmd.Flags().BoolP("update", "u", false, "Update option")
+
+	// args for optionKey
+	rootCmd.Flags().StringP("value", "v", "", "Set value by option key")
+
 }

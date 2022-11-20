@@ -15,47 +15,23 @@ type LcResponseBody struct {
 	ObjectId  string `json:"objectId"`
 }
 
-func GetUrl(key string) string {
-	return "https://8alqie7r.lc-cn-n1-shared.com/1.1/classes/options/" + key
-}
-
-func LcGet(optionKey string) LcResponseBody {
-	url := GetUrl(optionKey)
+func getRestClient() *resty.Client {
 	client := resty.New()
 	// set header Lc_key, lc_id from os.get env
 	lcId := os.Getenv("LC_ID")
 	lcKey := os.Getenv("LC_KEY")
 	client.SetHeaders(map[string]string{"X-LC-Id": lcId, "X-LC-Key": lcKey})
-	resp, err := client.R().Get(url)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	var lcResponseBody LcResponseBody
-	json.Unmarshal(resp.Body(), &lcResponseBody)
-	return lcResponseBody
+	return client
 }
 
-// create item by key/value
-func LcPost(optionKey string, key, value string) LcResponseBody {
-	url := GetUrl(optionKey)
-	client := resty.New()
-	resp, err := client.R().SetBody(map[string]string{
-		"key":   key,
-		"value": value,
-	}).Post(url)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	var lcResponseBody LcResponseBody
-	json.Unmarshal(resp.Body(), &lcResponseBody)
-	return lcResponseBody
+func GetUrl(key string) string {
+	return "https://8alqie7r.lc-cn-n1-shared.com/1.1/classes/options/" + key
 }
 
-func LcPut(optionKey string, key, value string) LcResponseBody {
+func LcUpdate(optionKey string, value string) LcResponseBody {
 	url := GetUrl(optionKey)
-	client := resty.New()
+	client := getRestClient()
 	resp, err := client.R().SetBody(map[string]string{
-		"key":   key,
 		"value": value,
 	}).Put(url)
 	if err != nil {
@@ -66,11 +42,15 @@ func LcPut(optionKey string, key, value string) LcResponseBody {
 	return lcResponseBody
 }
 
-func LcDelete(optionKey string) {
+func LcRead(optionKey string) string {
 	url := GetUrl(optionKey)
-	client := resty.New()
-	_, err := client.R().Delete(url)
+	client := getRestClient()
+	resp, err := client.R().Get(url)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	var lcResponseBody LcResponseBody
+	json.Unmarshal(resp.Body(), &lcResponseBody)
+	// to json
+	return lcResponseBody.Value
 }
