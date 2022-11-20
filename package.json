@@ -1,0 +1,12 @@
+{
+  "name": "leancloud-cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Leancloud cli for options curd.",
+  "scripts": {
+    "build": "goreleaser --rm-dist"
+  },
+  "author": "afeiship",
+  "license": "MIT",
+  "homepage": "https://github.com/afeiship/leancloud-cli#readme"
+}
